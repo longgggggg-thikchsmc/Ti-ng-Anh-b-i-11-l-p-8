@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,7 +240,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
 <button class="nav-btn next-btn" onclick="changeSlide(1)">&gt;</button>
 <div class="progress-dots" id="dots-container"></div>
 
-<!-- Slide 1 -->
 <div class="slide-container active">
     <div class="title-layout">
         <p style="color: #60a5fa; letter-spacing: 5px; font-weight: 600;">UNIT 11</p>
@@ -250,7 +248,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     </div>
 </div>
 
-<!-- Slide 2 -->
 <div class="slide-container">
     <div class="title-layout">
         <div style="background: #3b82f6; height: 5px; width: 100px; margin: 0 auto 30px;"></div>
@@ -259,7 +256,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     </div>
 </div>
 
-<!-- Slide 3 -->
 <div class="slide-container">
     <h2 class="slide-title">Common Challenges</h2>
     <div class="content-area">
@@ -278,7 +274,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     </div>
 </div>
 
-<!-- Slide 4 -->
 <div class="slide-container bleed-image-layout">
     <div class="content-container">
         <p style="color: #2dd4bf;">INTRODUCING</p>
@@ -288,7 +283,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     <img class="bleed-image-side" src="http://googleusercontent.com/image_collection/image_retrieval/6103892155288217081" alt="[Balo thông minh]">
 </div>
 
-<!-- Slide 5 -->
 <div class="slide-container">
     <h2 class="slide-title">Amazing Features</h2>
     <div class="tiled-content">
@@ -298,7 +292,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     </div>
 </div>
 
-<!-- Slide 6 -->
 <div class="slide-container">
     <h2 class="slide-title">How it works</h2>
     <div class="tiled-content">
@@ -308,7 +301,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     </div>
 </div>
 
-<!-- Slide 7 -->
 <div class="slide-container">
     <h2 class="slide-title">Comparison</h2>
     <table>
@@ -319,7 +311,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
     </table>
 </div>
 
-<!-- Slide 8: Q&A + Chat Gemini -->
 <div class="slide-container">
     <div class="qa-layout">
         <h2 style="font-size: 50px;">ANY QUESTIONS?</h2>
@@ -327,7 +318,7 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
             <div class="chat-history" id="chatHistory">
                 <div class="chat-msg bot-msg">Chào bạn! Mình là AI hỗ trợ từ tương lai. Bạn có câu hỏi nào về <strong>SmartPack</strong> không?</div>
             </div>
-            <div id="loading" class="loading" style="display:none;">Gemini đang trả lời...</div>
+            <div id="loading" class="loading" style="display:none;">AI đang suy nghĩ...</div>
             <div class="chat-input-area">
                 <input type="text" id="userInput" placeholder="Hỏi AI về SmartPack..." onkeypress="if(event.key==='Enter') sendMessage()">
                 <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
@@ -337,9 +328,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
 </div>
 
 <script>
-    // Cài đặt API Key
-    const GEMINI = ""; 
-
     // QUẢN LÝ SLIDE
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide-container');
@@ -367,7 +355,7 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
         if(e.key==='ArrowLeft') changeSlide(-1);
     });
 
-    // QUẢN LÝ CHAT GEMINI 1.5 FLASH
+    // QUẢN LÝ CHAT GEMINI QUA VERCEL API
     async function sendMessage() {
         const input = document.getElementById('userInput');
         const history = document.getElementById('chatHistory');
@@ -375,10 +363,6 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
         const text = input.value.trim();
 
         if(!text) return;
-        if(!GEMINI) {
-            alert("Vui lòng thêm API Key vào biến GEMINI!");
-            return;
-        }
 
         // Hiện tin nhắn user
         history.innerHTML += `<div class="chat-msg user-msg">${text}</div>`;
@@ -387,46 +371,30 @@ td { border-bottom: 1px solid rgba(148, 163, 184, 0.1); padding: 20px; }
 
         loader.style.display = 'block';
 
-        const payload = {
-            contents: [{ parts: [{ text: text }] }],
-            systemInstruction: {
-                parts: [{ text: "Bạn là trợ lý ảo trong buổi thuyết trình Unit 11 Science and Technology. Sản phẩm là SmartPack - Balo thông minh. Trả lời tiếng Việt, ngắn gọn, sáng tạo, hỗ trợ người thuyết trình trả lời câu hỏi của khán giả." }]
+        try {
+            // GỌI ĐẾN FILE SERVERLESS CỦA BẠN (api/chat.js)
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text }) 
+            });
+            
+            if (!response.ok) {
+                throw new Error('Lỗi từ Server');
             }
-        };
-
-        let retries = 0;
-        const maxRetries = 3;
-
-        async function fetchWithRetry() {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) throw new Error('API Error');
-                
-                const data = await response.json();
-                const reply = data.candidates[0].content.parts[0].text;
-                loader.style.display = 'none';
-                history.innerHTML += `<div class="chat-msg bot-msg">${reply}</div>`;
-                history.scrollTop = history.scrollHeight;
-            } catch (err) {
-                if (retries < maxRetries) {
-                    retries++;
-                    setTimeout(fetchWithRetry, 1000 * Math.pow(2, retries));
-                } else {
-                    loader.style.display = 'none';
-                    history.innerHTML += `<div class="chat-msg bot-msg">⚠️ Xin lỗi, mình đang gặp chút trục trặc kết nối. Bạn thử lại nhé!</div>`;
-                }
-            }
+            
+            const data = await response.json();
+            const reply = data.candidates[0].content.parts[0].text;
+            
+            loader.style.display = 'none';
+            history.innerHTML += `<div class="chat-msg bot-msg">${reply}</div>`;
+            history.scrollTop = history.scrollHeight;
+        } catch (err) {
+            console.error(err);
+            loader.style.display = 'none';
+            history.innerHTML += `<div class="chat-msg bot-msg">⚠️ Lỗi kết nối máy chủ. Bạn đã cấu hình API đúng chưa?</div>`;
         }
-
-        fetchWithRetry();
     }
 </script>
 </body>
 </html>
-
-```

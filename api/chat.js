@@ -7,7 +7,8 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY; // Key này sẽ cài trên Vercel
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        // ĐÃ ĐỔI TÊN MODEL Ở ĐƯỜNG LINK BÊN DƯỚI 👇
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -24,4 +25,3 @@ export default async function handler(req, res) {
         res.status(500).json({ error: 'Lỗi kết nối API' });
     }
 }
-
